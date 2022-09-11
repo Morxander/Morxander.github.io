@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Intro to EventBus android library | Morad Edwar</title>
+<meta name="generator" content="Jekyll v4.2.2" />
+<meta property="og:title" content="Intro to EventBus android library" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Just another human" />
+<meta property="og:description" content="Just another human" />
+<link rel="canonical" href="https://www.morad-edwar.com/blog/2017/03/07/intro-to-eventbus-android-library.html" />
+<meta property="og:url" content="https://www.morad-edwar.com/blog/2017/03/07/intro-to-eventbus-android-library.html" />
+<meta property="og:site_name" content="Morad Edwar" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2017-03-07T00:00:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Intro to EventBus android library" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","dateModified":"2017-03-07T00:00:00+01:00","datePublished":"2017-03-07T00:00:00+01:00","description":"Just another human","headline":"Intro to EventBus android library","mainEntityOfPage":{"@type":"WebPage","@id":"https://www.morad-edwar.com/blog/2017/03/07/intro-to-eventbus-android-library.html"},"url":"https://www.morad-edwar.com/blog/2017/03/07/intro-to-eventbus-android-library.html"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/main.css"><link type="application/atom+xml" rel="alternate" href="https://www.morad-edwar.com/blog/feed.xml" title="Morad Edwar" /></head>
+<body><header class="site-header" role="banner">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">Morad Edwar</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Intro to EventBus android library</h1>
+    <p class="post-meta">
+      <time class="dt-published" datetime="2017-03-07T00:00:00+01:00" itemprop="datePublished">Mar 7, 2017
+      </time></p>
+  </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <p><img src="/blog/assets/event_bus.png" alt="EventBus" /></p>
+
+<p>I started to use <code class="language-plaintext highlighter-rouge">EventBus</code> library of <a href="http://greenrobot.org/eventbus/">greenrobot</a> and I wanted to share it with you. <code class="language-plaintext highlighter-rouge">EventBus</code> is a publish/subscribe event bus optimized for Android according to the description in the readme file on their repo. In other word it’s a Bus for events to transfer the data between your application classes.
+I am using <code class="language-plaintext highlighter-rouge">MVP</code> as a design pattern for my apps but I will just show how to work with the <code class="language-plaintext highlighter-rouge">EventBus</code> library on an empty Android Project so every time I’ll mention the <code class="language-plaintext highlighter-rouge">Activity</code> It will be your <code class="language-plaintext highlighter-rouge">Presenter</code> if you’re using <code class="language-plaintext highlighter-rouge">MVP</code> like me.
+Also I created a <code class="language-plaintext highlighter-rouge">github</code> repo with an example project and you will find its link on the end of this article.</p>
+
+<h6 id="create-a-new-android-project">Create a new Android project</h6>
+<p>create a new Android project and add the following line to the app gradle file :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>compile 'org.greenrobot:eventbus:3.0.0' That's how you tell `Android Studio` to download the `EventBus` library and include it to your project.
+</code></pre></div></div>
+
+<h6 id="set-the-ui-of-the-mainactivity">Set the UI of the MainActivity</h6>
+<p>Open the <code class="language-plaintext highlighter-rouge">activity_main.xml</code> file and add the following lines in it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;TextView
+    android:id="@+id/mainactivity_textview"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="20dp"
+    android:textSize="25sp"
+    android:text="The message will be here" /&gt;
+
+&lt;Button
+    android:id="@+id/mainactivity_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:text="Go To Next Activity"/&gt;
+</code></pre></div></div>
+
+<p>Then your edit the MainActivity class to be like this 
+	public class MainActivity extends AppCompatActivity {</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    TextView mainActivityTextView;
+    Button mainActivityButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setContentView(R.layout.activity_main);
+	// init the views
+	mainActivityTextView = (TextView) findViewById(R.id.mainactivity_textview);
+	mainActivityButton = (Button) findViewById(R.id.mainactivity_button);
+} ###### Create the ChildActivity  Create a new activity called `ChildActivity`.
+</code></pre></div></div>
+
+<p><strong>XML</strong> :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;EditText
+    android:id="@+id/childactivity_edittext"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="20dp"
+    android:textSize="25sp"
+    /&gt;
+
+&lt;Button
+    android:id="@+id/childactivity_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:text="Send To Main Activity"/&gt;
+</code></pre></div></div>
+
+<p><strong>Java</strong> :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_child);
+    // init the views
+    childActivityEditText = (EditText) findViewById(R.id.childactivity_edittext);
+    childActivityButton = (Button) findViewById(R.id.childactivity_button);
+}
+</code></pre></div></div>
+
+<h6 id="create-the-message-class">Create the Message class</h6>
+<p>We have to create a class for the message which will be transfered between our activities and you have the freedom to call it whatever you like and to have any method, In this case we will call it <code class="language-plaintext highlighter-rouge">MessageEvent</code> and we will put a <code class="language-plaintext highlighter-rouge">String</code> var called <code class="language-plaintext highlighter-rouge">message</code> and set a getter&amp;setter for it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class MessageEvent {
+    private String message;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}
+</code></pre></div></div>
+
+<h6 id="register-your-mainactivity-to-the-eventbus">Register your MainActivity to the EventBus</h6>
+<p>You have to register your activity to the <code class="language-plaintext highlighter-rouge">EventBus</code> you have to put this like in the <code class="language-plaintext highlighter-rouge">onCreate</code> method :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>EventBus.getDefault().register(this);
+</code></pre></div></div>
+
+<p>and to understand it, the <code class="language-plaintext highlighter-rouge">EventBus</code> class is a <code class="language-plaintext highlighter-rouge">Singleton</code> class and the <code class="language-plaintext highlighter-rouge">getDefault()</code> is a static method which returns the instance of this class.
+also the <code class="language-plaintext highlighter-rouge">register()</code> is the method which register the views/class to the <code class="language-plaintext highlighter-rouge">EventBus</code> and we pass the mainactivity object to it.</p>
+
+<p>Now your <code class="language-plaintext highlighter-rouge">MainActivity</code> is registered but how to pick up the call when the <code class="language-plaintext highlighter-rouge">EventBus</code> publish the event?
+just create a <code class="language-plaintext highlighter-rouge">onMessageEvent</code> method and use the <code class="language-plaintext highlighter-rouge">@Subscribe</code> annotation above it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Subscribe(threadMode = ThreadMode.MAIN)
+public void onMessageEvent(MessageEvent messageEvent){
+    mainActivityTextView.setText(messageEvent.getMessage());
+} And now every time the `EventBus` will publish the `MessageEvent` you activity will know about it.
+</code></pre></div></div>
+
+<h6 id="post-the-message-to-the-eventbus">Post the message to the EventBus</h6>
+<p>On your <code class="language-plaintext highlighter-rouge">ChildActivity</code> put this code</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    childActivityButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            MessageEvent messageEvent = new MessageEvent();
+            messageEvent.setMessage(childActivityEditText.getText().toString());
+
+            EventBus.getDefault().post(messageEvent);
+        }
+    }); which is just creating a new object of `MessageEvent` and uses the `post()` method of the `EventBus` to tell it to publish the new `MessageEvent` object to whoever cares about it.
+</code></pre></div></div>
+
+<h6 id="why-to-use-eventbus">Why to use EventBus?</h6>
+<p>It will help you to apply the publisher/subscriber pattern without getting your hand dirty with the details, and of course they already took care of the performance and the optimizations for you, so don’t reinvent the wheel.</p>
+
+<h6 id="example">Example</h6>
+<p>I create a <code class="language-plaintext highlighter-rouge">Github</code> repo to be an example for you : https://github.com/Morxander/TestingEventBus</p>
+
+<p><em>I welcome any suggestion or advices about what I wrote here on this article</em> <strong>:)</strong></p>
+
+
+  </div><a class="u-url" href="/blog/2017/03/07/intro-to-eventbus-android-library.html" hidden></a>
+</article>
+
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <h2 class="footer-heading">Morad Edwar</h2>
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col footer-col-1">
+        <ul class="contact-list">
+          <li class="p-name">Morad Edwar</li></ul>
+      </div>
+
+      <div class="footer-col footer-col-2"><ul class="social-media-list"><li><a href="https://github.com/Morxander"><svg class="svg-icon"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg> <span class="username">Morxander</span></a></li><li><a href="https://www.twitter.com/Morxander"><svg class="svg-icon"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg> <span class="username">Morxander</span></a></li></ul>
+</div>
+
+      <div class="footer-col footer-col-3">
+        <p>Just another human</p>
+      </div>
+    </div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

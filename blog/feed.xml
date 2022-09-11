@@ -1,17 +1,467 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://www.morad-edwar.com/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.morad-edwar.com/blog/" rel="alternate" type="text/html" /><updated>2022-09-11T10:24:20+02:00</updated><id>https://www.morad-edwar.com/blog/feed.xml</id><title type="html">Morad Edwar</title><subtitle>Just another human</subtitle><entry><title type="html">Welcome to Jekyll!</title><link href="https://www.morad-edwar.com/blog/jekyll/update/2022/09/10/welcome-to-jekyll.html" rel="alternate" type="text/html" title="Welcome to Jekyll!" /><published>2022-09-10T10:49:36+02:00</published><updated>2022-09-10T10:49:36+02:00</updated><id>https://www.morad-edwar.com/blog/jekyll/update/2022/09/10/welcome-to-jekyll</id><content type="html" xml:base="https://www.morad-edwar.com/blog/jekyll/update/2022/09/10/welcome-to-jekyll.html"><![CDATA[<p>You’ll find this post in your <code class="language-plaintext highlighter-rouge">_posts</code> directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run <code class="language-plaintext highlighter-rouge">jekyll serve</code>, which launches a web server and auto-regenerates your site when a file is updated.</p>
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.2.2">Jekyll</generator><link href="https://www.morad-edwar.com/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://www.morad-edwar.com/blog/" rel="alternate" type="text/html" /><updated>2022-09-11T11:11:57+02:00</updated><id>https://www.morad-edwar.com/blog/feed.xml</id><title type="html">Morad Edwar</title><subtitle>Just another human</subtitle><entry><title type="html">Don’t use ActiveRecord for Bulk Operations</title><link href="https://www.morad-edwar.com/blog/2019/02/03/dont-use-activerecord-for-bulk-operation.html" rel="alternate" type="text/html" title="Don’t use ActiveRecord for Bulk Operations" /><published>2019-02-03T00:00:00+01:00</published><updated>2019-02-03T00:00:00+01:00</updated><id>https://www.morad-edwar.com/blog/2019/02/03/dont-use-activerecord-for-bulk-operation</id><content type="html" xml:base="https://www.morad-edwar.com/blog/2019/02/03/dont-use-activerecord-for-bulk-operation.html"><![CDATA[<p><img src="/blog/assets/rails.png" alt="Rails" /></p>
 
-<p>Jekyll requires blog post files to be named according to the following format:</p>
+<p>Everybody knows that this line :</p>
 
-<p><code class="language-plaintext highlighter-rouge">YEAR-MONTH-DAY-title.MARKUP</code></p>
+<p><code class="language-plaintext highlighter-rouge">Model.where(column: 'value').update_all(column: 'Another Value')</code></p>
 
-<p>Where <code class="language-plaintext highlighter-rouge">YEAR</code> is a four-digit number, <code class="language-plaintext highlighter-rouge">MONTH</code> and <code class="language-plaintext highlighter-rouge">DAY</code> are both two-digit numbers, and <code class="language-plaintext highlighter-rouge">MARKUP</code> is the file extension representing the format used in the file. After that, include the necessary front matter. Take a look at the source for this post to get an idea about how it works.</p>
-
-<p>Jekyll also offers powerful support for code snippets:</p>
-
-<figure class="highlight"><pre><code class="language-ruby" data-lang="ruby"><span class="k">def</span> <span class="nf">print_hi</span><span class="p">(</span><span class="nb">name</span><span class="p">)</span>
-  <span class="nb">puts</span> <span class="s2">"Hi, </span><span class="si">#{</span><span class="nb">name</span><span class="si">}</span><span class="s2">"</span>
+<p>is better than the following lines :</p>
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">Model</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="ss">column: </span><span class="s1">'value'</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">item</span><span class="o">|</span>
+    <span class="n">item</span><span class="p">.</span><span class="nf">column</span> <span class="o">=</span> <span class="s1">'Another Value'</span>
+    <span class="n">item</span><span class="p">.</span><span class="nf">save</span>
 <span class="k">end</span>
-<span class="n">print_hi</span><span class="p">(</span><span class="s1">'Tom'</span><span class="p">)</span>
-<span class="c1">#=&gt; prints 'Hi, Tom' to STDOUT.</span></code></pre></figure>
+</code></pre></div></div>
+<p>Not because it’s shorter, but because it will get executed as one <code class="language-plaintext highlighter-rouge">UPDATE</code> statement, Not as multiple <code class="language-plaintext highlighter-rouge">UPDATE</code> statements.</p>
 
-<p>Check out the <a href="https://jekyllrb.com/docs/home">Jekyll docs</a> for more info on how to get the most out of Jekyll. File all bugs/feature requests at <a href="https://github.com/jekyll/jekyll">Jekyll’s GitHub repo</a>. If you have questions, you can ask them on <a href="https://talk.jekyllrb.com/">Jekyll Talk</a>.</p>]]></content><author><name></name></author><category term="jekyll" /><category term="update" /><summary type="html"><![CDATA[You’ll find this post in your _posts directory. Go ahead and edit it and re-build the site to see your changes. You can rebuild the site in many different ways, but the most common way is to run jekyll serve, which launches a web server and auto-regenerates your site when a file is updated.]]></summary></entry></feed>
+<p><img src="https://media.giphy.com/media/N2rLxtwaU9rBC/giphy.gif" alt="https://media.giphy.com/media/N2rLxtwaU9rBC/giphy.gif" /></p>
+
+<p>But it seems that I did this mistake while working on a worker that should bulk insert thousands of records.</p>
+
+<p>My task was to clone N amount of records and update one value for the new clones (records), So I started to work and here was my code :</p>
+
+<div class="language-ruby highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="no">ActiveRecord</span><span class="o">::</span><span class="no">Base</span><span class="p">.</span><span class="nf">transaction</span>  <span class="k">do</span>
+	<span class="no">Model</span><span class="p">.</span><span class="nf">where</span><span class="p">(</span><span class="ss">column: </span><span class="s1">'value'</span><span class="p">).</span><span class="nf">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">item</span><span class="o">|</span>
+		<span class="n">new_item</span> <span class="o">=</span> <span class="n">item</span><span class="p">.</span><span class="nf">dup</span> <span class="c1"># Duplicating the Object</span>
+	    <span class="n">new_item</span><span class="p">.</span><span class="nf">column</span> <span class="o">=</span> <span class="s1">'Another Value'</span>
+	    <span class="n">new_item</span><span class="p">.</span><span class="nf">save</span>
+	<span class="k">end</span>
+<span class="k">end</span>
+</code></pre></div></div>
+
+<p>So even though I am using  <code class="language-plaintext highlighter-rouge">DB Transactions</code> thinking that It would be the most optimized solution since I’m committing my records at once but I forgot the fact that I’m executing multiple <code class="language-plaintext highlighter-rouge">INSERT</code> statements.</p>
+
+<p>So the solution is to execute one <code class="language-plaintext highlighter-rouge">SQL INSERT statement</code> but unfortunately <code class="language-plaintext highlighter-rouge">Rails</code> doesn’t support that or <code class="language-plaintext highlighter-rouge">ActiveRecords</code> doesn’t. So I had to use a 3rd party gem to do so, and the gem is <a href="https://github.com/jamis/bulk_insert">bulk_insert</a>.</p>
+
+<p><code class="language-plaintext highlighter-rouge">bulk_insert</code> allows you to insert multiple records in one single <code class="language-plaintext highlighter-rouge">INSERT</code> statement along with some other features where you can check in this <a href="https://github.com/jamis/bulk_insert/blob/master/README.md">README</a> file. And to test it, I created a small <code class="language-plaintext highlighter-rouge">Rails</code> App with a local <code class="language-plaintext highlighter-rouge">PostgreSQL</code> DB to benchmark the alternative solutions. The benchmark was testing the time to bulk insert 100k records.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Solution</th>
+      <th>Time to insert 100K records</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Multiple <strong>INSERT</strong> statements with <strong>DB Transaction</strong></td>
+      <td>~ 88 seconds</td>
+    </tr>
+    <tr>
+      <td>Using <strong>bulk_insert</strong> gem</td>
+      <td>~ 8 seconds</td>
+    </tr>
+  </tbody>
+</table>
+
+<p><img src="https://thumbs.gfycat.com/TangibleCavernousBeardeddragon-size_restricted.gif" alt="https://thumbs.gfycat.com/TangibleCavernousBeardeddragon-size_restricted.gif" /></p>
+
+<p>I admit that the <code class="language-plaintext highlighter-rouge">ORMs</code> spoiled me and I need to pay more attention to what’s happening behind the scenes.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Benchmark: WireGuard vs OpenVPN</title><link href="https://www.morad-edwar.com/blog/2017/05/30/wireguard-benchmark-vs-openvpn.html" rel="alternate" type="text/html" title="Benchmark: WireGuard vs OpenVPN" /><published>2017-05-30T00:00:00+02:00</published><updated>2017-05-30T00:00:00+02:00</updated><id>https://www.morad-edwar.com/blog/2017/05/30/wireguard-benchmark-vs-openvpn</id><content type="html" xml:base="https://www.morad-edwar.com/blog/2017/05/30/wireguard-benchmark-vs-openvpn.html"><![CDATA[<p><img src="/blog/assets/wireguard.png" alt="WireGuard" /></p>
+
+<p>I’ve talked about how to build a <code class="language-plaintext highlighter-rouge">WireGuard</code> VPN server in 5 minutes in <a href="https://blog.morad-edwar.com/your-own-wireguard-vpn-server-in-5-minutes/">Blog Post</a>. But I didn’t explain why I am so excited and happy with <code class="language-plaintext highlighter-rouge">WireGuard</code> and why I felt that I need more faster VPN solution.</p>
+
+<p><img src="https://i.giphy.com/media/3oriNYQX2lC6dfW2Ji/giphy.webp" alt="Quicksilver" /></p>
+
+<p>So in this short and direct blog post I will share a quick <code class="language-plaintext highlighter-rouge">Benchmark</code> vs <code class="language-plaintext highlighter-rouge">OpenVPN</code>. 
+I used <a href="http://www.speedtest.net">speedtest.net</a> to test my internet speed and please notice that I have a 32Mbps line so before I connect to any VPN I started the test and the result was :</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ping</th>
+      <th style="text-align: center">Download</th>
+      <th style="text-align: right">Upload</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>7 ms</td>
+      <td style="text-align: center">33.01 Mbps</td>
+      <td style="text-align: right">7.50 Mbps</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>But because I need to use a VPN to bypass some blocked websites blocked by the <code class="language-plaintext highlighter-rouge">ISP</code> and to watch the <code class="language-plaintext highlighter-rouge">Netflix</code> USA content.
+For example I was using a peronal <code class="language-plaintext highlighter-rouge">OpenVPN</code> server but I wasn’t ever happy with the internet speed over the <code class="language-plaintext highlighter-rouge">VPN</code> and here is internet speed test results while using my <code class="language-plaintext highlighter-rouge">OpenVPN</code> server :</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ping</th>
+      <th style="text-align: center">Download</th>
+      <th style="text-align: right">Upload</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>133 ms</td>
+      <td style="text-align: center">3 Mbps</td>
+      <td style="text-align: right">1.9 Mbps</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>So I lost around 90% of my internet speed.</p>
+
+<p><img src="https://media.giphy.com/media/4qmcuu67Hxx0Q/giphy.gif" alt="Why Me" /></p>
+
+<p>I know that someone will talk about <code class="language-plaintext highlighter-rouge">OpenVPN</code> optmizition and the server specs but when I started to use <code class="language-plaintext highlighter-rouge">WireGuard</code> installed on a $5 server and I didn’t optmize anything it was something else and here is the speed test results for <code class="language-plaintext highlighter-rouge">WireGuard</code> :</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>Ping</th>
+      <th style="text-align: center">Download</th>
+      <th style="text-align: right">Upload</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>188 ms</td>
+      <td style="text-align: center">27.32 Mbps</td>
+      <td style="text-align: right">4.53 Mbps</td>
+    </tr>
+  </tbody>
+</table>
+
+<p>So accept <code class="language-plaintext highlighter-rouge">WireGuard</code> into your life and forget about <code class="language-plaintext highlighter-rouge">OpenVPN</code>.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Your own WireGuard VPN server in 5 minutes</title><link href="https://www.morad-edwar.com/blog/2017/05/25/your-own-wireguard-vpn-server-in-5-minutes.html" rel="alternate" type="text/html" title="Your own WireGuard VPN server in 5 minutes" /><published>2017-05-25T00:00:00+02:00</published><updated>2017-05-25T00:00:00+02:00</updated><id>https://www.morad-edwar.com/blog/2017/05/25/your-own-wireguard-vpn-server-in-5-minutes</id><content type="html" xml:base="https://www.morad-edwar.com/blog/2017/05/25/your-own-wireguard-vpn-server-in-5-minutes.html"><![CDATA[<p><img src="/blog/assets/wireguard.png" alt="WireGuard" /></p>
+
+<p>I used to use a personal <code class="language-plaintext highlighter-rouge">OpenVPN</code> server but I was never okay with its speed even though I tuned &amp; enhanced the server configurations but still it wasn’t good enough.
+Then I heard about <a href="https://www.wireguard.com">WireGuard</a> and how fast and secure it is from my friend <a href="https://github.com/mina-alber">Mina</a> so I decided to give it a try so I used Mina’s <a href="https://github.com/mina-alber/wireguard-ansible">Ansible Playbook</a> to install and configure a <code class="language-plaintext highlighter-rouge">WireGuard</code> server.
+I created a <code class="language-plaintext highlighter-rouge">$5</code> instance in <a href="https://www.digitalocean.com/">DigitalOcean</a> with <code class="language-plaintext highlighter-rouge">CentOS 7</code> and I downloaded the playbook on my laptop ( you have to have Ansbile installed ):</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ansible-galaxy <span class="nb">install </span>mina-alber.wireguard-ansible
+</code></pre></div></div>
+
+<p>Then I modified the <code class="language-plaintext highlighter-rouge">hosts_inventory</code> file with the server info :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[all]
+wireguard    ansible_host=[IP_ADDR]    ansible_port=[SSH_PORT]  ansible_user=root
+</code></pre></div></div>
+
+<p>And I started the script :</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>ansible-playbook <span class="nt">-i</span> hosts_inventory wireguard.yml
+</code></pre></div></div>
+
+<p>It took only <code class="language-plaintext highlighter-rouge">5 minutes</code> and my <code class="language-plaintext highlighter-rouge">WireGuard</code> VPN Server was ready.
+Now SSH to the server and run the following command :</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wg show
+</code></pre></div></div>
+
+<p>And you should get an output like this :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[root@wireguard ~]# wg show
+interface: wg0
+  public key: 0c916OHwwAbP71I9UBFpddIsPH8MyTSifhLad+gy4GY=
+  private key: (hidden)
+  listening port: 51820
+</code></pre></div></div>
+
+<p>Copy the <code class="language-plaintext highlighter-rouge">public key</code> because we’ll need it later for the client configuration.</p>
+
+<p>Then I installed <code class="language-plaintext highlighter-rouge">WireGuard Tools</code> on my <code class="language-plaintext highlighter-rouge">MacOS</code> which has the <code class="language-plaintext highlighter-rouge">WireGuard Client</code> to connect to the server :</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>brew <span class="nb">install </span>wireguard-tools
+</code></pre></div></div>
+
+<p>And I used it to generate a key for my laptop :</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wg genkey | <span class="nb">tee </span>privatekey | wg pubkey <span class="o">&gt;</span> publickey
+</code></pre></div></div>
+
+<p>And I created a configuration file inside my home dir but you can create anywhere <code class="language-plaintext highlighter-rouge">/Users/morxander/wg.conf</code> :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Interface]
+Address = 10.0.0.2/32 #select an unreserved IP
+PrivateKey = [[YOUR_PRIVATE_KEY]]
+DNS = 8.8.8.8
+[Peer]
+PublicKey = [[SERVER_PUBLIC_KEY]]
+AllowedIPs = 0.0.0.0/0
+Endpoint = [[SERVER_IP]]:51820
+PersistentKeepalive = 25
+</code></pre></div></div>
+
+<p>Replace the <code class="language-plaintext highlighter-rouge">[[YOUR_PRIVATE_KEY]]</code> with the key inside the <code class="language-plaintext highlighter-rouge">privatekey</code> file, <code class="language-plaintext highlighter-rouge">[[SERVER_PUBLIC_KEY]]</code> with the <code class="language-plaintext highlighter-rouge">public key</code> which we got from <code class="language-plaintext highlighter-rouge">wg show</code> command on the server and <code class="language-plaintext highlighter-rouge">[[SERVER_IP]]</code> with the server IP.</p>
+
+<p>Now SSH to the server again and edit <code class="language-plaintext highlighter-rouge">WireGuard</code> config file <code class="language-plaintext highlighter-rouge">/etc/wireguard/wg0.conf</code> and add your client block :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[Peer]
+PublicKey = [[YOUR_PUBLIC_KEY]]
+AllowedIPs = 10.0.0.2/32
+</code></pre></div></div>
+
+<p>And replace <code class="language-plaintext highlighter-rouge">[[YOUR_PUBLIC_KEY]]</code> with the key inside the <code class="language-plaintext highlighter-rouge">publickey</code> file.</p>
+
+<p>And finally restart the service on the server :</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>systemctl restart wg-quick@wg0.service
+</code></pre></div></div>
+
+<p>And now let’s connect to your VPN server.
+On your local machine :</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">$ </span>wg-quick up /Users/morxander/wg.conf
+</code></pre></div></div>
+<p>And congratulations you’re connected now to your new VPN server. You can get your current IP :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>$ curl https://wtfismyip.com/text
+</code></pre></div></div>
+
+<p>And now I can watch the US Netflix content without paying to a 3rd part VPN service.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Android Context Cheat Sheet</title><link href="https://www.morad-edwar.com/blog/2017/03/17/android-context-cheat-sheet.html" rel="alternate" type="text/html" title="Android Context Cheat Sheet" /><published>2017-03-17T00:00:00+01:00</published><updated>2017-03-17T00:00:00+01:00</updated><id>https://www.morad-edwar.com/blog/2017/03/17/android-context-cheat-sheet</id><content type="html" xml:base="https://www.morad-edwar.com/blog/2017/03/17/android-context-cheat-sheet.html"><![CDATA[<p><img src="/blog/assets/android.jpg" alt="Android" /></p>
+
+<p>I read an <a href="https://possiblemobile.com/2013/06/context/">article</a> about <a href="https://developer.android.com/reference/android/content/Context.html">Android Context</a> written by <a href="https://possiblemobile.com/author/daves/">Dave Smith</a> and I found that this table (cheat sheet) is very useful, So I decided to copy it here to my blog to save it and make sure that I won’t lose it even if the original link expired.</p>
+
+<p><em>The common actions you can safely take with a given <em>Context</em> object depends on where it came from originally.  Below is a table of the common places an application will receive a <em>Context</em>, and in each case what it is useful for:&lt;/p&gt;</em></p>
+
+<table align="center" width="90%" border="1">
+<thead>
+<tr>
+<th></th>
+<th align="center">Application</th>
+<th align="center">Activity</th>
+<th align="center">Service</th>
+<th align="center">ContentProvider</th>
+<th align="center">BroadcastReceiver</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Show a Dialog</td>
+<td align="center">NO</td>
+<td align="center">YES</td>
+<td align="center">NO</td>
+<td align="center">NO</td>
+<td align="center">NO</td>
+</tr>
+<tr>
+<td>Start an Activity</td>
+<td align="center">NO<sup>1</sup></td>
+<td align="center">YES</td>
+<td align="center">NO<sup>1</sup></td>
+<td align="center">NO<sup>1</sup></td>
+<td align="center">NO<sup>1</sup></td>
+</tr>
+<tr>
+<td>Layout Inflation</td>
+<td align="center">NO<sup>2</sup></td>
+<td align="center">YES</td>
+<td align="center">NO<sup>2</sup></td>
+<td align="center">NO<sup>2</sup></td>
+<td align="center">NO<sup>2</sup></td>
+</tr>
+<tr>
+<td>Start a Service</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+</tr>
+<tr>
+<td>Bind to a Service</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">NO</td>
+</tr>
+<tr>
+<td>Send a Broadcast</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+</tr>
+<tr>
+<td>Register BroadcastReceiver</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">NO<sup>3</sup></td>
+</tr>
+<tr>
+<td>Load Resource Values</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+<td align="center">YES</td>
+</tr>
+</tbody>
+</table>
+
+<ol>
+  <li>An application CAN start an Activity from here, but it requires that a new task be created.  This may fit specific use cases, but can create non-standard back stack behaviors in your application and is generally not recommended or considered good practice.</li>
+  <li>This is legal, but inflation will be done with the default theme for the system on which you are running, not what’s defined in your application.</li>
+  <li>Allowed if the receiver is <em>null</em>, which is used for obtaining the current value of a sticky broadcast, on Android 4.2 and above.</li>
+</ol>]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">[BOINC] Donate your power to humanity</title><link href="https://www.morad-edwar.com/blog/2017/03/10/boinc-donate-your-power-to-humanity.html" rel="alternate" type="text/html" title="[BOINC] Donate your power to humanity" /><published>2017-03-10T00:00:00+01:00</published><updated>2017-03-10T00:00:00+01:00</updated><id>https://www.morad-edwar.com/blog/2017/03/10/boinc-donate-your-power-to-humanity</id><content type="html" xml:base="https://www.morad-edwar.com/blog/2017/03/10/boinc-donate-your-power-to-humanity.html"><![CDATA[<p><img src="/blog/assets/boinc_logo.png" alt="BOINC" /></p>
+
+<p>Two days ago I read this article “<a href="https://www.cnet.com/news/scientists-want-to-borrow-power-from-your-phone-cure-cancer/?ftag=COS-05-10-aa0a&amp;linkId=35277255">Scientists want to borrow power from your phone to cure cancer</a>” and I was talking about something I knew that it exists but I didn’t try it before.
+It was talking about a project called <a href="https://en.wikipedia.org/wiki/Berkeley_Open_Infrastructure_for_Network_Computing">BOINC</a> which stands for “<strong><em>Berkeley Open Infrastructure for Network Computing</em></strong>”. The small version is that you can donate your power to calculate some equations and scientists stuff to cure disease by leaving a program working on your laptop/phone while you’re not using it or even while you’re if your work doesn’t require the full power of your CPU.
+I work as <code class="language-plaintext highlighter-rouge">Android Developer</code> so I need the full capacity of my <code class="language-plaintext highlighter-rouge">CPU</code> but I leave my laptop on during the night and it’s always connected to a power source so I decided to install the program and set it to work during the night and turn itself off on 7:00am.
+Visit this <a href="https://www.worldcommunitygrid.org/join.action?projectToAdd=scc1#signup">link</a> to start helping in curing cancer like I did and If you are <code class="language-plaintext highlighter-rouge">ubuntu</code> user, install the program with the following command</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo apt-get install boinc-client boinc-manager
+</code></pre></div></div>
+
+<p>and start it with</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>boincmgr -d /var/lib/boinc-client
+</code></pre></div></div>
+
+<p>and please notice that the <code class="language-plaintext highlighter-rouge">boinc-manager</code> is just a <code class="language-plaintext highlighter-rouge">UI-Remote</code> for the <code class="language-plaintext highlighter-rouge">boinc-client</code> which means closing the first one won’t terminate the second. So make sure to stop the tasks before closing it and to set the working time through the settings because <code class="language-plaintext highlighter-rouge">boinc-client</code> will start automatically with your system.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Intro to EventBus android library</title><link href="https://www.morad-edwar.com/blog/2017/03/07/intro-to-eventbus-android-library.html" rel="alternate" type="text/html" title="Intro to EventBus android library" /><published>2017-03-07T00:00:00+01:00</published><updated>2017-03-07T00:00:00+01:00</updated><id>https://www.morad-edwar.com/blog/2017/03/07/intro-to-eventbus-android-library</id><content type="html" xml:base="https://www.morad-edwar.com/blog/2017/03/07/intro-to-eventbus-android-library.html"><![CDATA[<p><img src="/blog/assets/event_bus.png" alt="EventBus" /></p>
+
+<p>I started to use <code class="language-plaintext highlighter-rouge">EventBus</code> library of <a href="http://greenrobot.org/eventbus/">greenrobot</a> and I wanted to share it with you. <code class="language-plaintext highlighter-rouge">EventBus</code> is a publish/subscribe event bus optimized for Android according to the description in the readme file on their repo. In other word it’s a Bus for events to transfer the data between your application classes.
+I am using <code class="language-plaintext highlighter-rouge">MVP</code> as a design pattern for my apps but I will just show how to work with the <code class="language-plaintext highlighter-rouge">EventBus</code> library on an empty Android Project so every time I’ll mention the <code class="language-plaintext highlighter-rouge">Activity</code> It will be your <code class="language-plaintext highlighter-rouge">Presenter</code> if you’re using <code class="language-plaintext highlighter-rouge">MVP</code> like me.
+Also I created a <code class="language-plaintext highlighter-rouge">github</code> repo with an example project and you will find its link on the end of this article.</p>
+
+<h6 id="create-a-new-android-project">Create a new Android project</h6>
+<p>create a new Android project and add the following line to the app gradle file :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>compile 'org.greenrobot:eventbus:3.0.0' That's how you tell `Android Studio` to download the `EventBus` library and include it to your project.
+</code></pre></div></div>
+
+<h6 id="set-the-ui-of-the-mainactivity">Set the UI of the MainActivity</h6>
+<p>Open the <code class="language-plaintext highlighter-rouge">activity_main.xml</code> file and add the following lines in it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;TextView
+    android:id="@+id/mainactivity_textview"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="20dp"
+    android:textSize="25sp"
+    android:text="The message will be here" /&gt;
+
+&lt;Button
+    android:id="@+id/mainactivity_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:text="Go To Next Activity"/&gt;
+</code></pre></div></div>
+
+<p>Then your edit the MainActivity class to be like this 
+	public class MainActivity extends AppCompatActivity {</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    TextView mainActivityTextView;
+    Button mainActivityButton;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+	super.onCreate(savedInstanceState);
+	setContentView(R.layout.activity_main);
+	// init the views
+	mainActivityTextView = (TextView) findViewById(R.id.mainactivity_textview);
+	mainActivityButton = (Button) findViewById(R.id.mainactivity_button);
+} ###### Create the ChildActivity  Create a new activity called `ChildActivity`.
+</code></pre></div></div>
+
+<p><strong>XML</strong> :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>&lt;EditText
+    android:id="@+id/childactivity_edittext"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:layout_marginTop="20dp"
+    android:textSize="25sp"
+    /&gt;
+
+&lt;Button
+    android:id="@+id/childactivity_button"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="20dp"
+    android:text="Send To Main Activity"/&gt;
+</code></pre></div></div>
+
+<p><strong>Java</strong> :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Override
+protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_child);
+    // init the views
+    childActivityEditText = (EditText) findViewById(R.id.childactivity_edittext);
+    childActivityButton = (Button) findViewById(R.id.childactivity_button);
+}
+</code></pre></div></div>
+
+<h6 id="create-the-message-class">Create the Message class</h6>
+<p>We have to create a class for the message which will be transfered between our activities and you have the freedom to call it whatever you like and to have any method, In this case we will call it <code class="language-plaintext highlighter-rouge">MessageEvent</code> and we will put a <code class="language-plaintext highlighter-rouge">String</code> var called <code class="language-plaintext highlighter-rouge">message</code> and set a getter&amp;setter for it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>public class MessageEvent {
+    private String message;
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}
+</code></pre></div></div>
+
+<h6 id="register-your-mainactivity-to-the-eventbus">Register your MainActivity to the EventBus</h6>
+<p>You have to register your activity to the <code class="language-plaintext highlighter-rouge">EventBus</code> you have to put this like in the <code class="language-plaintext highlighter-rouge">onCreate</code> method :</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>EventBus.getDefault().register(this);
+</code></pre></div></div>
+
+<p>and to understand it, the <code class="language-plaintext highlighter-rouge">EventBus</code> class is a <code class="language-plaintext highlighter-rouge">Singleton</code> class and the <code class="language-plaintext highlighter-rouge">getDefault()</code> is a static method which returns the instance of this class.
+also the <code class="language-plaintext highlighter-rouge">register()</code> is the method which register the views/class to the <code class="language-plaintext highlighter-rouge">EventBus</code> and we pass the mainactivity object to it.</p>
+
+<p>Now your <code class="language-plaintext highlighter-rouge">MainActivity</code> is registered but how to pick up the call when the <code class="language-plaintext highlighter-rouge">EventBus</code> publish the event?
+just create a <code class="language-plaintext highlighter-rouge">onMessageEvent</code> method and use the <code class="language-plaintext highlighter-rouge">@Subscribe</code> annotation above it.</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>@Subscribe(threadMode = ThreadMode.MAIN)
+public void onMessageEvent(MessageEvent messageEvent){
+    mainActivityTextView.setText(messageEvent.getMessage());
+} And now every time the `EventBus` will publish the `MessageEvent` you activity will know about it.
+</code></pre></div></div>
+
+<h6 id="post-the-message-to-the-eventbus">Post the message to the EventBus</h6>
+<p>On your <code class="language-plaintext highlighter-rouge">ChildActivity</code> put this code</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>    childActivityButton.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View view) {
+            MessageEvent messageEvent = new MessageEvent();
+            messageEvent.setMessage(childActivityEditText.getText().toString());
+
+            EventBus.getDefault().post(messageEvent);
+        }
+    }); which is just creating a new object of `MessageEvent` and uses the `post()` method of the `EventBus` to tell it to publish the new `MessageEvent` object to whoever cares about it.
+</code></pre></div></div>
+
+<h6 id="why-to-use-eventbus">Why to use EventBus?</h6>
+<p>It will help you to apply the publisher/subscriber pattern without getting your hand dirty with the details, and of course they already took care of the performance and the optimizations for you, so don’t reinvent the wheel.</p>
+
+<h6 id="example">Example</h6>
+<p>I create a <code class="language-plaintext highlighter-rouge">Github</code> repo to be an example for you : https://github.com/Morxander/TestingEventBus</p>
+
+<p><em>I welcome any suggestion or advices about what I wrote here on this article</em> <strong>:)</strong></p>]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Very important Android Libraries</title><link href="https://www.morad-edwar.com/blog/2017/01/15/very-important-android-libraries.html" rel="alternate" type="text/html" title="Very important Android Libraries" /><published>2017-01-15T00:00:00+01:00</published><updated>2017-01-15T00:00:00+01:00</updated><id>https://www.morad-edwar.com/blog/2017/01/15/very-important-android-libraries</id><content type="html" xml:base="https://www.morad-edwar.com/blog/2017/01/15/very-important-android-libraries.html"><![CDATA[<p><img src="/blog/assets/android.jpg" alt="Android" /></p>
+
+<p>I develop <code class="language-plaintext highlighter-rouge">Android</code> Applications in my daily job and I use a lot of third-party libraries which save a lot of work and time for me, I would like to share some useful libraries with you which are popular and well known but let’s do it to thanks their developers and to share the knowledge :</p>
+
+<ul>
+  <li><a href="https://github.com/JakeWharton/butterknife">Butter Knife</a> no more <code class="language-plaintext highlighter-rouge">findviewbyid()</code></li>
+  <li><a href="https://github.com/square/picasso">picasso</a> download, view and cache images</li>
+  <li><a href="https://github.com/konmik/nucleus">Nucleus</a> the best library to apply <code class="language-plaintext highlighter-rouge">MVP</code> design pattern</li>
+  <li><a href="https://github.com/square/retrofit">Retrofit</a> you have to use it</li>
+  <li><a href="https://github.com/ViksaaSkool/AwesomeSplash">AwesomeSplash</a> no time to create a <code class="language-plaintext highlighter-rouge">Splash Screen</code>? use it.</li>
+  <li><a href="https://github.com/pardom/ActiveAndroid">ActiveAndroid</a> I know that it’s not the best <code class="language-plaintext highlighter-rouge">ORM</code> but I like it</li>
+  <li><a href="https://github.com/pilgr/Paper">Paper</a> the best <code class="language-plaintext highlighter-rouge">NoSQL</code> data storage for Android</li>
+  <li><a href="https://github.com/Flipboard/bottomsheet">BottomSheet</a> make a <code class="language-plaintext highlighter-rouge">BottomSheet</code> looks like <code class="language-plaintext highlighter-rouge">Uber</code> app.</li>
+</ul>
+
+<p>and that’s it.</p>
+
+<p><a href="https://www.flickr.com/photos/86979666@N00/8161660138">image source</a></p>]]></content><author><name></name></author><summary type="html"><![CDATA[]]></summary></entry><entry><title type="html">Hello World!</title><link href="https://www.morad-edwar.com/blog/2017/01/03/hello-world.html" rel="alternate" type="text/html" title="Hello World!" /><published>2017-01-03T00:00:00+01:00</published><updated>2017-01-03T00:00:00+01:00</updated><id>https://www.morad-edwar.com/blog/2017/01/03/hello-world</id><content type="html" xml:base="https://www.morad-edwar.com/blog/2017/01/03/hello-world.html"><![CDATA[<h2 id="hello-world">Hello World!</h2>
+<p>This is my first post, and I won’t say more than hello to you.</p>]]></content><author><name></name></author><summary type="html"><![CDATA[Hello World! This is my first post, and I won’t say more than hello to you.]]></summary></entry></feed>
